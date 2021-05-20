@@ -31,7 +31,7 @@ public class TicketDao implements Dao<Ticket> {
 
     @Override
     public List<Ticket> getAll() {
-        return jdbcTemplate.query("select * from ticket", ticketRowMapper);
+        return jdbcTemplate.query("SELECT * FROM ticket WHERE is_solved = false", ticketRowMapper);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TicketDao implements Dao<Ticket> {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         PreparedStatementCreator preparedStatementCreator = connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                    "INSERT INTO ticket (date, description, is_solved, learner_idx) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO ticket (DATE, description, is_solved, learner_idx) VALUES (?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             );
             ps.setTimestamp(1, Timestamp.valueOf(ticket.getDate()));
@@ -59,12 +59,12 @@ public class TicketDao implements Dao<Ticket> {
     }
 
     public Ticket updateTicketStatus(Ticket ticket, Long id) {
-        jdbcTemplate.update("UPDATE ticket set is_solved = ? where id = ?", ticket.isSolved(), id);
+        jdbcTemplate.update("UPDATE ticket SET is_solved = ? WHERE id = ?", ticket.isSolved(), id);
         return ticket;
     }
 
     @Override
     public void delete(Long id) {
-        jdbcTemplate.update("DELETE from ticket where id = ?", id);
+        jdbcTemplate.update("DELETE FROM ticket WHERE id = ?", id);
     }
 }
